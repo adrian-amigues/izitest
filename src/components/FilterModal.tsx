@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { Temp, tempLabelMapping } from '../tempsData'
 import { DEFAULT_SORT } from './TempsTable'
 
 const Wrapper = styled.div`
@@ -48,10 +49,15 @@ const InputRow = styled.div`
 
 type FilterModalProps = {
   isOpen: boolean
+  searchedProperty: keyof Temp | null
   onClose: (search: string, sortBy: string) => void
 }
 
-const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
+const FilterModal: React.FC<FilterModalProps> = ({
+  isOpen,
+  searchedProperty,
+  onClose,
+}) => {
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState(DEFAULT_SORT)
 
@@ -67,17 +73,22 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
   )
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyPress)
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyPress)
+    } else {
+      window.removeEventListener('keydown', handleKeyPress)
+    }
 
     return () => {
       window.removeEventListener('keydown', handleKeyPress)
     }
-  }, [handleKeyPress])
+  }, [handleKeyPress, isOpen])
 
-  if (!isOpen) return null
+  if (!isOpen || !searchedProperty) return null
 
   return (
     <Wrapper>
+      <h4>Filtre sur la propriété: {tempLabelMapping[searchedProperty]}</h4>
       <SearchInputWrapper>
         <input
           autoFocus
@@ -120,6 +131,7 @@ const FilterModal: React.FC<FilterModalProps> = ({ isOpen, onClose }) => {
           />
           <label htmlFor="za">Trier de Z à A</label>
         </InputRow>
+        <p>Appuyez sur Entrée pour valider, ou Echap pour annuler</p>
       </RadioWrapper>
     </Wrapper>
   )

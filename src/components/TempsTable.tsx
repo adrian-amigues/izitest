@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
 
-import { tempsData, Temp } from '../tempsData'
+import { tempsData, Temp, tempLabelMapping } from '../tempsData'
 import FilterModal from './FilterModal'
 import TableHeaderWithFilter from './TableHeaderWithFilter'
 
@@ -17,19 +17,29 @@ const Table = styled.table`
   width: 800px;
   table-layout: fixed;
 
-  tr {
-    height: 40px;
-  }
-
   td,
   th {
     border-bottom: 1px solid #e2e6ee;
   }
 `
 
+const TableRow = styled.tr`
+  height: 40px;
+`
+
 const TableHead = styled.thead`
   background: #f7f9fa;
   color: #2b497c;
+`
+
+const FilterModalTableRow = styled.tr`
+  height: 0;
+  display: block;
+  text-align: left;
+
+  th {
+    font-weight: initial;
+  }
 `
 
 const TableCell = styled.td`
@@ -83,32 +93,40 @@ const TempsTable: React.FC = () => {
     <Wrapper>
       <Table>
         <TableHead>
-          <tr>
+          <TableRow>
             <TableHeaderWithFilter
-              label="Intérimaires"
+              label={tempLabelMapping.email}
               onFilter={() => handleOpenFilterModal('email')}
+              isActive={!!search && searchedProperty === 'email'}
             />
             <TableHeaderWithFilter
-              label="Poste"
+              label={tempLabelMapping.job}
               onFilter={() => handleOpenFilterModal('job')}
+              isActive={!!search && searchedProperty === 'job'}
             />
             <TableHeaderWithFilter
-              label="Client"
+              label={tempLabelMapping.client}
               onFilter={() => handleOpenFilterModal('client')}
+              isActive={!!search && searchedProperty === 'client'}
             />
-          </tr>
+          </TableRow>
+          <FilterModalTableRow>
+            <th>
+              <FilterModal
+                isOpen={isFilterModalOpen}
+                onClose={handleCloseFilterModal}
+                searchedProperty={searchedProperty}
+              />
+            </th>
+          </FilterModalTableRow>
         </TableHead>
-        <FilterModal
-          isOpen={isFilterModalOpen}
-          onClose={handleCloseFilterModal}
-        />
         <tbody>
           {refinedTemps.map((temp) => (
-            <tr>
+            <TableRow key={temp.email}>
               <TableCell>{temp.email}</TableCell>
               <TableCell>{temp.job}</TableCell>
               <TableCell>{temp.client}</TableCell>
-            </tr>
+            </TableRow>
           ))}
         </tbody>
       </Table>

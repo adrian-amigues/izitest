@@ -25,3 +25,10 @@ export const tempsData: Temp[] = [
     creationDate: new Date('2021-06-06T00:00:00.000sZ'),
   },
 ]
+
+export const tempLabelMapping: Record<keyof Temp, string> = {
+  email: 'Intérimaires',
+  job: 'Poste',
+  client: 'Client',
+  creationDate: 'Date de création',
+}
